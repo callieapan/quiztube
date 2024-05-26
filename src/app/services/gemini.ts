@@ -41,7 +41,7 @@ const model = genAI.getGenerativeModel({
 });
 
 const QUIZPROMPT = `From the below transcription generate 5 multiple choice questions. Remove non ascii characters in the description`
-const QUIZPROMPTRESPONSEPROMPT = `Create the questions and answers in the following json format`;
+const QUIZPROMPTRESPONSEPROMPT = `Create the questions and answers in the following json format. Make sure to validate the JSON`;
 const QUIZPROMPTRESPONSEFORMAT = `[{
                               question:
                               options: Array
