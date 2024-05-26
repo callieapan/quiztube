@@ -16,7 +16,7 @@ export default function Footer() {
         <p className="text-center text-sm leading-loose text-muted-foreground md:text-left">
           Copyright @ 2024 QuizTube. All Rights Reserved.
         </p>
-        <ThemeToggle />
+        {/* <ThemeToggle /> */}
       </div>
     </footer>
   );

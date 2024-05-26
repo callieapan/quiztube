@@ -1,4 +1,8 @@
+'use client';
+
 import React from 'react';
+
+import { useRouter } from 'next/navigation';
 
 import {
   Form,
@@ -8,32 +12,54 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useSession } from '@/lib/client-auth';
+import { useUser } from '@clerk/clerk-react';
+import { SignIn } from '@clerk/nextjs';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
+import { useMutation } from 'convex/react';
 import { ArrowRight } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { api } from '../../convex/_generated/api';
+import { Id } from '../../convex/_generated/dataModel';
 import { Button } from './ui/button';
 
 const formSchema = z.object({
-  youtubeId: z.string().min(2, {
+  videoUrl: z.string().min(2, {
     message: 'Need a YouTube URL',
   }),
 });
 
 export default function YoutubeURLForm() {
+  const user = useUser();
+  const session = useSession();
+  const router = useRouter();
+  const { isLoggedIn } = useSession();
+  const userId = session?.session?.user?.id;
+
+  const addVideo = useMutation(api.videos.addVideo);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      youtubeId: '',
+      videoUrl: 'https://www.youtube.com/watch?v=tZVZQLyCDfo',
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const response = await axios.post('/api/questions', {
-      youtubeId: values.youtubeId,
-    });
+    try {
+      if (user.isSignedIn) {
+        addVideo({
+          videoUrl: values.videoUrl,
+          userId: userId as Id<'users'>,
+        });
+      } else {
+        router.push('/sign-in');
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (
@@ -44,7 +70,7 @@ export default function YoutubeURLForm() {
       >
         <FormField
           control={form.control}
-          name="youtubeId"
+          name="videoUrl"
           render={({ field }) => (
             <FormItem className="w-full">
               <FormControl>

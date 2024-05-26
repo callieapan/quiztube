@@ -12,13 +12,9 @@ export default defineSchema({
     .index('by_userId', ['userId'])
     .index('by_email', ['email']),
   videos: defineTable({
-    videoId: v.string(), // Unique identifier for each video
-    youtubeVideoId: v.string(), // The YouTube ID of the video
-    title: v.string(), // The title of the video
-    thumbnailUrl: v.string(), // URL for the thumbnail image
-    description: v.optional(v.string()), // A brief description of the video
+    thumbnailUrl: v.string(),
+    videoUrl: v.string(),
     userId: v.string(),
-  })
-    .index('by_videoId', ['videoId'])
-    .index('by_userId', ['userId']),
+    videoId: v.string(),
+  }).index('by_userId', ['userId']),
 });
