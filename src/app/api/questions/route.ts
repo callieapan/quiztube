@@ -13,7 +13,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     const { youtubeId } = await req.json();
 
     const transcript = YoutubeTranscript.fetchTranscript(youtubeId, {
-      lang: 'en-US',
+      lang: 'en',
     });
     const data = (await transcript).map((t) => t.text);
 
