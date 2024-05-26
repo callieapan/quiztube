@@ -125,6 +125,7 @@ export const addQuiz = mutation({
     createdBy: v.string(),
   },
   handler: async (ctx, args) => {
+    console.log('hit addQuiz');
     // Add Quiz Info to DB
     await ctx.db.insert('quizzes', {
       videoId: args.videoId,

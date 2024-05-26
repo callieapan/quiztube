@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -17,12 +17,11 @@ import { useUser } from '@clerk/clerk-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { useMutation } from 'convex/react';
-import { ArrowRight } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { ArrowRight, Loader2 } from 'lucide-react';
+import { set, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { api } from '../../convex/_generated/api';
-import { Id } from '../../convex/_generated/dataModel';
 import { Button } from './ui/button';
 
 const formSchema = z.object({
@@ -44,39 +43,35 @@ export default function YoutubeURLForm() {
   const router = useRouter();
   const { isLoggedIn } = useSession();
   const userId = session?.session?.user?.id;
-
+  const [videoUrl, setVideoUrl] = useState('');
   const addVideo = useMutation(api.videos.addVideo);
   const addQuiz = useMutation(api.videos.addQuiz);
+  function getYouTubeId(url: string): string | null {
+    const regex =
+      /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+  }
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       videoUrl: 'https://www.youtube.com/watch?v=tZVZQLyCDfo',
     },
   });
-
+  const isLoading = form.formState.isSubmitting;
   const youtubeId = getYouTubeId(form.watch('videoUrl'));
+  const thumbnailUrl = `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
+  const [data, setData] = useState<any>(null);
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       if (user.isSignedIn) {
-        // Add Video Info to DB
-        addVideo({
-          videoUrl: values.videoUrl,
-          userId: userId as Id<'users'>,
-        });
-
+        setVideoUrl(values.videoUrl);
         // Generate Quiz
         const response = await axios.post('/api/questions', {
           youtubeId: youtubeId,
         });
-
-        console.log(response.data);
-        if (response.data && response.data.questions) {
-          addQuiz({
-            videoId: youtubeId as string,
-            questions: response.data.questions,
-            createdBy: userId as string,
-          });
-        }
+        setData(response.data.data);
       } else {
         router.push('/sign-in');
       }
@@ -85,38 +80,92 @@ export default function YoutubeURLForm() {
     }
   }
 
+  console.log(data);
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-row space-x-2 items-start w-full"
-      >
-        <FormField
-          control={form.control}
-          name="videoUrl"
-          render={({ field }) => (
-            <FormItem className="w-full">
-              <FormControl>
-                <div className="relative h-10 w-full rounded-md">
-                  <Input
-                    placeholder="https://www.youtube.com/watch?v=tZVZQLyCDfo"
-                    {...field}
-                    className="h-12 text-md w-full rounded-lg"
-                  />
-                  <Button
-                    type="submit"
-                    className="w-fit whitespace-nowrap group mt-0.5 flex flex-row items-center gap-1.5 absolute right-1.5 top-[22px] transform -translate-y-1/2   z-10 cursor-pointer"
-                  >
-                    <span>Generate Quiz</span>
-                    <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 duration-200" />
-                  </Button>
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+    <div className="flex flex-col space-y-10 w-full">
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-row space-x-2 items-start w-full"
+        >
+          <FormField
+            control={form.control}
+            name="videoUrl"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormControl>
+                  <div className="relative h-10 w-full rounded-md">
+                    <Input
+                      placeholder="https://www.youtube.com/watch?v=tZVZQLyCDfo"
+                      {...field}
+                      className="h-12 text-md w-full rounded-lg"
+                    />
+                    <Button
+                      type="submit"
+                      className="w-fit whitespace-nowrap group mt-0.5 flex flex-row items-center gap-1.5 absolute right-1.5 top-[22px] transform -translate-y-1/2   z-10 cursor-pointer"
+                    >
+                      <span>Generate Quiz</span>
+                      <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 duration-200" />
+                    </Button>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </form>
+      </Form>
+
+      {videoUrl && (
+        <div>
+          <div className="mt-10">
+            <iframe
+              width="620"
+              height="315"
+              src={`https://www.youtube.com/embed/${youtubeId}`}
+              className="rounded-xl"
+            />
+          </div>
+          {isLoading ? (
+            <div className="mt-10">
+              <div className="flex flex-col space-y-1 items-center justify-center">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <span className="font-semibold">Generating Quiz...</span>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-10">
+              <div className="flex items-center justify-center">
+                <span className="font-semibold">
+                  {data && (
+                    <div className="mt-10">
+                      {data.map((question: any, index: any) => (
+                        <div
+                          key={index}
+                          className="my-4 p-5 shadow-lg rounded-lg bg-white"
+                        >
+                          <h3 className="font-semibold">{question.question}</h3>
+                          <div className="mt-2">
+                            {question.options.map((option: any, idx: any) => (
+                              <button
+                                key={idx}
+                                className="block p-2 my-2 text-left w-full border rounded hover:bg-gray-100"
+                              >
+                                {option}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </span>
+              </div>
+            </div>
           )}
-        />
-      </form>
-    </Form>
+          <div></div>
+        </div>
+      )}
+    </div>
   );
 }

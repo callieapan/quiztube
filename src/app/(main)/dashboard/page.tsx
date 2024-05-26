@@ -28,7 +28,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const { session } = useSession();
   const userId = session?.user.id as Id<'users'>;
-  const getVideos = useQuery(api.videos.getVideos, { userId: userId });
+  // const getVideos = useQuery(api.videos.getVideos, { userId: userId });
 
   return (
     <div className="flex-1 h-full flex flex-col space-y-4">
@@ -40,7 +40,7 @@ export default function DashboardPage() {
           <YoutubeURLForm />
         </div>
       </div>
-
+      {/* 
       {getVideos && getVideos?.length > 0 ? (
         <div>
           <div className="flex items-center justify-end">
@@ -87,7 +87,7 @@ export default function DashboardPage() {
             </span>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 }
