@@ -7,6 +7,7 @@ import { getUserId, vid } from './util';
 export const addVideo = mutation({
   args: {
     videoUrl: v.string(),
+    userId: v.string(),
   },
   handler: async (ctx, args) => {
     function getYouTubeId(url: string): string | null {
@@ -18,12 +19,11 @@ export const addVideo = mutation({
     const youtubeId = getYouTubeId(args.videoUrl);
 
     const thumbnailUrl = `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
-    const userId = await getUserId(ctx);
 
     await ctx.db.insert('videos', {
       videoUrl: args.videoUrl,
       thumbnailUrl: thumbnailUrl,
-      userId: userId as Id<'users'>,
+      userId: args.userId as Id<'users'>,
     });
   },
 });
@@ -85,15 +85,13 @@ export const getVideo = query({
 });
 
 export const getVideos = query({
-  args: {},
+  args: { userId: v.string() },
 
   handler: async (ctx, args) => {
-    const userId = await getUserId(ctx);
-
-    if (userId) {
+    if (args.userId) {
       const videos = await ctx.db
         .query('videos')
-        .withIndex('by_userId', (q) => q.eq('userId', userId))
+        .withIndex('by_userId', (q) => q.eq('userId', args.userId))
         .collect();
       return videos;
     }

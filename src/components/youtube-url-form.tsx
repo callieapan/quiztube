@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 
 import {
@@ -8,6 +10,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useSession } from '@/lib/client-auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { useMutation } from 'convex/react';
@@ -16,6 +19,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { api } from '../../convex/_generated/api';
+import { Id } from '../../convex/_generated/dataModel';
 import { Button } from './ui/button';
 
 const formSchema = z.object({
@@ -25,17 +29,21 @@ const formSchema = z.object({
 });
 
 export default function YoutubeURLForm() {
+  const session = useSession();
+
+  const userId = session?.session?.user?.id;
+
   const addVideo = useMutation(api.videos.addVideo);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      videoUrl: '',
+      videoUrl: 'https://www.youtube.com/watch?v=tZVZQLyCDfo',
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      addVideo({ videoUrl: values.videoUrl });
+      addVideo({ videoUrl: values.videoUrl, userId: userId as Id<'users'> });
     } catch (error) {
       console.log(error);
     }
