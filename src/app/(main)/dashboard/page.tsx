@@ -46,7 +46,7 @@ export default function DashboardPage() {
                   <Card
                     className="hover:shadow-lg duration-200 cursor-pointer"
                     onClick={() => {
-                      router.push('/learn/1');
+                      router.push(`/learn/${video._id}`);
                     }}
                   >
                     <div className="relative h-full w-full p-4">
@@ -59,10 +59,10 @@ export default function DashboardPage() {
                         objectFit="contain"
                         className="object-contain rounded-lg"
                       />
-                      <div className="mt-3 flex flex-row justify-between items-center">
+                      {/* <div className="mt-3 flex flex-row justify-between items-center">
                         <span>Name of video</span>
                         <EllipsisVertical className="h-4 w-4" />
-                      </div>
+                      </div> */}
                     </div>
                   </Card>
                 </div>

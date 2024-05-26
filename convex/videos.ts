@@ -2,7 +2,7 @@ import { v } from 'convex/values';
 
 import { Id } from './_generated/dataModel';
 import { mutation, query } from './_generated/server';
-import { getUserId, vid } from './util';
+import { vid } from './util';
 
 export const addVideo = mutation({
   args: {
@@ -24,6 +24,7 @@ export const addVideo = mutation({
       videoUrl: args.videoUrl,
       thumbnailUrl: thumbnailUrl,
       userId: args.userId as Id<'users'>,
+      videoId: youtubeId as string,
     });
   },
 });

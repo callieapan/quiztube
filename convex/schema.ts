@@ -11,9 +11,10 @@ export default defineSchema({
   })
     .index('by_userId', ['userId'])
     .index('by_email', ['email']),
-  videos: defineTable({  
-    thumbnailUrl: v.string(),  
-    videoUrl: v.string(), 
+  videos: defineTable({
+    thumbnailUrl: v.string(),
+    videoUrl: v.string(),
     userId: v.string(),
+    videoId: v.string(),
   }).index('by_userId', ['userId']),
 });
