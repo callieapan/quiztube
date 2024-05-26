@@ -98,3 +98,15 @@ export const getVideos = query({
     }
   },
 });
+
+export const deleteVideo = mutation({
+  args: { videoId: vid('videos') },
+  handler: async (ctx, args) => {
+    const video = await ctx.db.get(args.videoId);
+    if (!video) {
+      throw new Error('video not found');
+    }
+
+    return await ctx.db.delete(video._id);
+  },
+});

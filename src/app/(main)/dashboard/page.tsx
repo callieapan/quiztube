@@ -5,13 +5,22 @@ import React from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
+import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
 import YoutubeURLForm from '@/components/youtube-url-form';
 import { useSession } from '@/lib/client-auth';
 import { useQuery } from 'convex/react';
 import { EllipsisVertical } from 'lucide-react';
 
+import { DeleteVideoSheet } from '../_components/sheets/delete-video-sheet';
 import { api } from '../../../../convex/_generated/api';
 import { Id } from '../../../../convex/_generated/dataModel';
 
@@ -45,9 +54,9 @@ export default function DashboardPage() {
                 <div key={idx}>
                   <Card
                     className="hover:shadow-lg duration-200 cursor-pointer"
-                    onClick={() => {
-                      router.push(`/learn/${video._id}`);
-                    }}
+                    // onClick={() => {
+                    //   router.push(`/learn/${video._id}`);
+                    // }}
                   >
                     <div className="relative h-full w-full p-4">
                       <Image
@@ -61,7 +70,27 @@ export default function DashboardPage() {
                       />
                       {/* <div className="mt-3 flex flex-row justify-between items-center">
                         <span>Name of video</span>
-                        <EllipsisVertical className="h-4 w-4" />
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+                            >
+                              <EllipsisVertical className="h-4 w-4" />
+                              <span className="sr-only">Open menu</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent
+                            align="end"
+                            className="w-[160px] z-50"
+                          >
+                            <DropdownMenuItem>
+                              <DeleteVideoSheet videoItem={video}>
+                                Delete
+                              </DeleteVideoSheet>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div> */}
                     </div>
                   </Card>
