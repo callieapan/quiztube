@@ -1,5 +1,4 @@
-import { Button, buttonVariants } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import ConditionalSignin from '@/components/conditional-signin';
 import { Goal } from 'lucide-react';
 
 export default function CTA() {
@@ -16,9 +15,7 @@ export default function CTA() {
                 Start Actively Learning Today!
               </h1>
               <p className="mt-2">Learn from the YouTube videos you watch</p>
-              <Button size="lg">
-                <span className="text-lg">Get started</span>
-              </Button>
+              <ConditionalSignin />
             </div>
             <div className="absolute inset-x-0 bottom-0 h-full bg-gradient-to-b from-transparent to-white to-70% dark:to-black" />
           </div>

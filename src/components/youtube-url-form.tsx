@@ -2,6 +2,8 @@
 
 import React from 'react';
 
+import { useRouter } from 'next/navigation';
+
 import {
   Form,
   FormControl,
@@ -11,6 +13,8 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useSession } from '@/lib/client-auth';
+import { useUser } from '@clerk/clerk-react';
+import { SignIn } from '@clerk/nextjs';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { useMutation } from 'convex/react';
@@ -29,8 +33,10 @@ const formSchema = z.object({
 });
 
 export default function YoutubeURLForm() {
+  const user = useUser();
   const session = useSession();
-
+  const router = useRouter();
+  const { isLoggedIn } = useSession();
   const userId = session?.session?.user?.id;
 
   const addVideo = useMutation(api.videos.addVideo);
@@ -43,7 +49,14 @@ export default function YoutubeURLForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      addVideo({ videoUrl: values.videoUrl, userId: userId as Id<'users'> });
+      if (user.isSignedIn) {
+        addVideo({
+          videoUrl: values.videoUrl,
+          userId: userId as Id<'users'>,
+        });
+      } else {
+        router.push('/sign-in');
+      }
     } catch (error) {
       console.log(error);
     }
