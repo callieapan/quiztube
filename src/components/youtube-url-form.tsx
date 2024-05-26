@@ -10,30 +10,35 @@ import {
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
+import { useMutation } from 'convex/react';
 import { ArrowRight } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { api } from '../../convex/_generated/api';
 import { Button } from './ui/button';
 
 const formSchema = z.object({
-  youtubeId: z.string().min(2, {
+  videoUrl: z.string().min(2, {
     message: 'Need a YouTube URL',
   }),
 });
 
 export default function YoutubeURLForm() {
+  const addVideo = useMutation(api.videos.addVideo);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      youtubeId: '',
+      videoUrl: '',
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const response = await axios.post('/api/transcript', {
-      youtubeId: values.youtubeId,
-    });
+    try {
+      addVideo({ videoUrl: values.videoUrl });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (
@@ -44,7 +49,7 @@ export default function YoutubeURLForm() {
       >
         <FormField
           control={form.control}
-          name="youtubeId"
+          name="videoUrl"
           render={({ field }) => (
             <FormItem className="w-full">
               <FormControl>

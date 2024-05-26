@@ -18,9 +18,10 @@ import { Id } from '../../../../convex/_generated/dataModel';
 export default function DashboardPage() {
   const { session } = useSession();
   const userId = session?.user.id as Id<'users'>;
-  // const getVideos = useQuery(api.videos.getVideos, { userId: userId });
+  const getVideos = useQuery(api.videos.getVideos);
 
-  // console.log(getVideos);
+ 
+
   return (
     <div className="flex-1 h-full flex flex-col space-y-4">
       <div className="flex flex-col space-y-6 mt-24 mb-10 items-center justify-center">
@@ -31,7 +32,18 @@ export default function DashboardPage() {
           <YoutubeURLForm />
         </div>
       </div>
+
+      {!getVideos && (
+        <div className="flex items-center justify-end">
+          <span>0 items</span>
+        </div>
+      )}
       <Separator />
+      {!getVideos && (
+        <div className="flex items-center justify-center pt-10">
+          <span className="font-semibold">No videos have been added yet.</span>
+        </div>
+      )}
       {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card
           className="hover:shadow-lg duration-200 cursor-pointer"

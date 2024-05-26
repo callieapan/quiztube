@@ -25,14 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={cn(montserrat.className)}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <ContextProvider>{children}</ContextProvider>
-        </ThemeProvider>
+        <ContextProvider>{children}</ContextProvider>
       </body>
     </html>
   );

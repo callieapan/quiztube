@@ -21,7 +21,7 @@ export default function Header() {
           <SignedIn>
             <UserButton />
           </SignedIn>
-          <ThemeToggle isDropDown={true} />
+          {/* <ThemeToggle isDropDown={true} /> */}
         </div>
       </div>
       <hr className="m-0 h-px w-full border-none bg-gradient-to-r from-neutral-200/0 via-neutral-200/30 to-neutral-200/0" />

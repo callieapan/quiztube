@@ -1,36 +1,32 @@
 import { v } from 'convex/values';
 
+import { Id } from './_generated/dataModel';
 import { mutation, query } from './_generated/server';
-import { vid } from './util';
+import { getUserId, vid } from './util';
 
-// export const addVideo = mutation({
-//   args: {
-//     name: v.string(),
-//     iconId: v.optional(v.string()),
-//     category: v.string(),
-//     link: v.string(),
-//     folderId: v.optional(vid('folders')),
-//     planId: vid('plans'),
-//   },
-//   handler: async (ctx, args) => {
-//     const accessObj = await hasAccessToMutatePlan(ctx, args.planId);
+export const addVideo = mutation({
+  args: {
+    videoUrl: v.string(),
+  },
+  handler: async (ctx, args) => {
+    function getYouTubeId(url: string): string | null {
+      const regex =
+        /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+      const match = url.match(regex);
+      return match ? match[1] : null;
+    }
+    const youtubeId = getYouTubeId(args.videoUrl);
 
-//     if (!accessObj) {
-//       return {
-//         error: 'No access to create resource on this plan',
-//       };
-//     }
+    const thumbnailUrl = `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
+    const userId = await getUserId(ctx);
 
-//     await ctx.db.insert('resources', {
-//       name: args.name,
-//       iconId: args.iconId,
-//       category: args.category,
-//       link: args.link,
-//       planId: args.planId,
-//       folderId: args.folderId,
-//     });
-//   },
-// });
+    await ctx.db.insert('videos', {
+      videoUrl: args.videoUrl,
+      thumbnailUrl: thumbnailUrl,
+      userId: userId as Id<'users'>,
+    });
+  },
+});
 
 // export const updateVideo = mutation({
 //   args: {
@@ -89,14 +85,17 @@ export const getVideo = query({
 });
 
 export const getVideos = query({
-    args: { userId: vid( 'users' ) },
-    
-  handler: async (ctx, args) => {
-    const videos = await ctx.db
-      .query('videos')
-      .withIndex('by_userId', (q) => q.eq('userId', args.userId))
-      .collect();
+  args: {},
 
-    return videos;
+  handler: async (ctx, args) => {
+    const userId = await getUserId(ctx);
+
+    if (userId) {
+      const videos = await ctx.db
+        .query('videos')
+        .withIndex('by_userId', (q) => q.eq('userId', userId))
+        .collect();
+      return videos;
+    }
   },
 });
