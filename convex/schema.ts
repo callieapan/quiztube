@@ -17,4 +17,15 @@ export default defineSchema({
     userId: v.string(),
     videoId: v.string(),
   }).index('by_userId', ['userId']),
+  quizzes: defineTable({
+    videoId: v.string(),
+    questions: v.array(
+      v.object({
+        question: v.string(),
+        options: v.array(v.string()),
+        answer: v.string(),
+      }),
+    ),
+    createdBy: v.string(),
+  }).index('by_videoId', ['videoId']),
 });

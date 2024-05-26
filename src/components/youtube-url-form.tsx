@@ -46,6 +46,7 @@ export default function YoutubeURLForm() {
   const userId = session?.session?.user?.id;
 
   const addVideo = useMutation(api.videos.addVideo);
+  const addQuiz = useMutation(api.videos.addQuiz);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -66,9 +67,16 @@ export default function YoutubeURLForm() {
         // Generate Quiz
         const response = await axios.post('/api/questions', {
           youtubeId: youtubeId,
-        } );
-        
-        
+        });
+
+        console.log(response.data);
+        if (response.data && response.data.questions) {
+          addQuiz({
+            videoId: youtubeId as string,
+            questions: response.data.questions,
+            createdBy: userId as string,
+          });
+        }
       } else {
         router.push('/sign-in');
       }

@@ -111,3 +111,25 @@ export const deleteVideo = mutation({
     return await ctx.db.delete(video._id);
   },
 });
+
+export const addQuiz = mutation({
+  args: {
+    videoId: v.string(),
+    questions: v.array(
+      v.object({
+        question: v.string(),
+        options: v.array(v.string()),
+        answer: v.string(),
+      }),
+    ),
+    createdBy: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Add Quiz Info to DB
+    await ctx.db.insert('quizzes', {
+      videoId: args.videoId,
+      questions: args.questions,
+      createdBy: args.createdBy,
+    });
+  },
+});
