@@ -54,9 +54,9 @@ export default function DashboardPage() {
                 <div key={idx}>
                   <Card
                     className="hover:shadow-lg duration-200 cursor-pointer"
-                    // onClick={() => {
-                    //   router.push(`/learn/${video._id}`);
-                    // }}
+                    onClick={() => {
+                      router.push(`/learn/${video._id}`);
+                    }}
                   >
                     <div className="relative h-full w-full p-4">
                       <Image
@@ -68,30 +68,6 @@ export default function DashboardPage() {
                         objectFit="contain"
                         className="object-contain rounded-lg"
                       />
-                      {/* <div className="mt-3 flex flex-row justify-between items-center">
-                        <span>Name of video</span>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-                            >
-                              <EllipsisVertical className="h-4 w-4" />
-                              <span className="sr-only">Open menu</span>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent
-                            align="end"
-                            className="w-[160px] z-50"
-                          >
-                            <DropdownMenuItem>
-                              <DeleteVideoSheet videoItem={video}>
-                                Delete
-                              </DeleteVideoSheet>
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div> */}
                     </div>
                   </Card>
                 </div>

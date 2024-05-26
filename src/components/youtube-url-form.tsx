@@ -14,7 +14,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { useSession } from '@/lib/client-auth';
 import { useUser } from '@clerk/clerk-react';
-import { SignIn } from '@clerk/nextjs';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { useMutation } from 'convex/react';
@@ -32,6 +31,13 @@ const formSchema = z.object({
   }),
 });
 
+function getYouTubeId(url: string): string | null {
+  const regex =
+    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  const match = url.match(regex);
+  return match ? match[1] : null;
+}
+
 export default function YoutubeURLForm() {
   const user = useUser();
   const session = useSession();
@@ -47,13 +53,22 @@ export default function YoutubeURLForm() {
     },
   });
 
+  const youtubeId = getYouTubeId(form.watch('videoUrl'));
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       if (user.isSignedIn) {
+        // Add Video Info to DB
         addVideo({
           videoUrl: values.videoUrl,
           userId: userId as Id<'users'>,
         });
+
+        // Generate Quiz
+        const response = await axios.post('/api/questions', {
+          youtubeId: youtubeId,
+        } );
+        
+        
       } else {
         router.push('/sign-in');
       }

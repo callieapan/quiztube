@@ -20,6 +20,7 @@ export const addVideo = mutation({
 
     const thumbnailUrl = `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
 
+    // Add Video Info to DB
     await ctx.db.insert('videos', {
       videoUrl: args.videoUrl,
       thumbnailUrl: thumbnailUrl,
