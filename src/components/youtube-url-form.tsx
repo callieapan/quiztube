@@ -31,7 +31,7 @@ export default function YoutubeURLForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const response = await axios.post('/api/transcript', {
+    const response = await axios.post('/api/questions', {
       youtubeId: values.youtubeId,
     });
   }
