@@ -34,11 +34,17 @@ export default function YoutubeURLForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+<<<<<<< HEAD
     try {
       addVideo({ videoUrl: values.videoUrl });
     } catch (error) {
       console.log(error);
     }
+=======
+    const response = await axios.post('/api/questions', {
+      youtubeId: values.youtubeId,
+    });
+>>>>>>> c6bd1f9357dd72a37376426659665d319fe2b723
   }
 
   return (
