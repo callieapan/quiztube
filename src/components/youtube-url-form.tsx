@@ -24,6 +24,10 @@ import { z } from 'zod';
 import { api } from '../../convex/_generated/api';
 import { Button } from './ui/button';
 
+interface Answers {
+  [key: number]: string;
+}
+
 const formSchema = z.object({
   videoUrl: z.string().min(2, {
     message: 'Need a YouTube URL',
@@ -38,6 +42,31 @@ function getYouTubeId(url: string): string | null {
 }
 
 export default function YoutubeURLForm() {
+  const [answers, setAnswers] = useState<Answers>({});
+  const [score, setScore] = useState(0);
+  const [quizComplete, setQuizComplete] = useState(false);
+  function handleAnswer(questionIndex: number, option: string) {
+    setAnswers((prev) => {
+      const updatedAnswers = { ...prev, [questionIndex]: option };
+
+      // Update score if this is the first time the question is being answered or if the answer is changed
+      if (
+        !prev[questionIndex] ||
+        (prev[questionIndex] && option !== prev[questionIndex])
+      ) {
+        const correctAnswer = data[questionIndex].answer;
+        const adjustment = option === correctAnswer ? 1 : -1;
+        setScore((prevScore) => prevScore + adjustment);
+      }
+
+      // Check if all questions have been answered
+      const allAnswered = Object.keys(updatedAnswers).length === data.length;
+      setQuizComplete(allAnswered);
+
+      return updatedAnswers;
+    });
+  }
+
   const user = useUser();
   const session = useSession();
   const router = useRouter();
@@ -117,53 +146,63 @@ export default function YoutubeURLForm() {
       </Form>
 
       {videoUrl && (
-        <div>
-          <div className="mt-10">
-            <iframe
-              width="620"
-              height="315"
-              src={`https://www.youtube.com/embed/${youtubeId}`}
-              className="rounded-xl"
-            />
-          </div>
-          {isLoading ? (
+        <div className="mt-10">
+          <iframe
+            width="620"
+            height="315"
+            src={`https://www.youtube.com/embed/${youtubeId}`}
+            className="rounded-xl"
+          />
+          {isLoading && (
             <div className="mt-10">
               <div className="flex flex-col space-y-1 items-center justify-center">
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 <span className="font-semibold">Generating Quiz...</span>
               </div>
             </div>
-          ) : (
-            <div className="mt-10">
-              <div className="flex items-center justify-center">
-                <span className="font-semibold">
-                  {data && (
-                    <div className="mt-10">
-                      {data.map((question: any, index: any) => (
-                        <div
-                          key={index}
-                          className="my-4 p-5 shadow-lg rounded-lg bg-white"
-                        >
-                          <h3 className="font-semibold">{question.question}</h3>
-                          <div className="mt-2">
-                            {question.options.map((option: any, idx: any) => (
-                              <button
-                                key={idx}
-                                className="block p-2 my-2 text-left w-full border rounded hover:bg-gray-100"
-                              >
-                                {option}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </span>
+          )}
+          {data?.map((question: any, index: number) => (
+            <div key={index} className="my-4 p-5 shadow-lg rounded-lg bg-white">
+              <h3 className="font-semibold">{question.question}</h3>
+              <div className="mt-2">
+                {question.options.map((option: string, idx: number) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleAnswer(index, option)}
+                    className={`block p-2 my-2 text-left w-full border rounded hover:bg-gray-100 ${answers[index] === option ? 'bg-blue-100' : ''}`}
+                  >
+                    {option}
+                    {answers[index] === option && (
+                      <span
+                        className={`font-bold ${option === question.answer ? 'text-green-500' : 'text-red-500'}`}
+                      >
+                        {option === question.answer ? ' Correct' : ' Incorrect'}
+                      </span>
+                    )}
+                  </button>
+                ))}
               </div>
             </div>
+          ))}
+          {quizComplete && (
+            <div className="text-center p-5">
+              <h2 className="text-lg font-semibold">
+                Quiz Completed! Here are your results:
+              </h2>
+              <p>
+                You got {score} out of {data.length} correct!
+              </p>
+              {data.map((question: any, index: number) => (
+                <div
+                  key={index}
+                  className={`text-${answers[index] === question.answer ? 'green' : 'red'}-500`}
+                >
+                  Question {index + 1}:{' '}
+                  {answers[index] === question.answer ? 'Correct' : 'Incorrect'}
+                </div>
+              ))}
+            </div>
           )}
-          <div></div>
         </div>
       )}
     </div>
