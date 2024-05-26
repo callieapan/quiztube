@@ -1,7 +1,5 @@
-{
-  "name": "quiztube-server",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {},
-  "dependencies": {}
-}
+Go to `server` folder and run the following commands
+
+`npm run install`
+
+`node index.js`
