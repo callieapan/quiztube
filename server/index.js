@@ -5,7 +5,7 @@ async function mainFn() {
     await YoutubeTranscript.YoutubeTranscript.fetchTranscript(
       'youtube.com/watch?v=tZVZQLyCDfo',
       {
-        lang: 'en-US',
+        lang: 'en',
       },
     );
 
