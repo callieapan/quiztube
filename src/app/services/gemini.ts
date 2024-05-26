@@ -41,7 +41,7 @@ const model = genAI.getGenerativeModel({
 });
 
 const QUIZPROMPT = `From the below transcription generate 5 multiple choice questions. Remove non ascii characters in the description`
-const QUIZPROMPTRESPONSEPROMPT = `Create the questions and answers in the following json format`;
+const QUIZPROMPTRESPONSEPROMPT = `Create the questions and answers in the following json format. Make sure to validate the JSON response`;
 const QUIZPROMPTRESPONSEFORMAT = `[{
                               question:
                               options: Array
@@ -94,8 +94,6 @@ export async function generateQuiz(instructiontext: string) {
   const response = result.response;
   const generatedQuizQuestions = response.text();
   console.log('Prompt response:', generatedQuizQuestions);
-  console.log('After clean up: ', removeFirstAndLastLine(generatedQuizQuestions));
-
 
   // The response from the API is in the format
   // ```json
@@ -103,6 +101,7 @@ export async function generateQuiz(instructiontext: string) {
   // ```
   // Clean the first and last line to extract the JSON
   const cleanedGeneratedQuizQuestions = removeFirstAndLastLine(generatedQuizQuestions);
+  console.log('After clean up: ', removeFirstAndLastLine(generatedQuizQuestions));
   // console.log(cleanedGeneratedQuizQuestions);
   return JSON.parse(cleanedGeneratedQuizQuestions);
 }
