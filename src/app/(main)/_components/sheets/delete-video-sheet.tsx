@@ -11,8 +11,8 @@ import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
-import { api } from '../../../../../convex/_generated/api';
-import { Doc, Id } from '../../../../../convex/_generated/dataModel';
+import { api } from '@/convex/_generated/api';
+import { Doc, Id } from '@/convex/_generated/dataModel';
 
 const formSchema = z.object({
   videoItemId: z.string(),

@@ -24,7 +24,7 @@ export default function Header() {
         <div className="flex flex-1 items-center flex-row space-x-6 justify-end">
           <Link
             href="/dashboard"
-            className={`text-sm ${pathname === '/dashboard' ? 'font-semibold' : ''}`}
+            className={`${pathname === '/dashboard' ? 'font-medium' : ''}`}
           >
             Dashboard
           </Link>

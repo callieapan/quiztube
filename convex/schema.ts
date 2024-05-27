@@ -15,7 +15,7 @@ export default defineSchema({
     thumbnailUrl: v.string(),
     videoUrl: v.string(),
     userId: v.string(),
-    videoId: v.string(),
+    youtubeId: v.string(),
   }).index('by_userId', ['userId']),
   quizzes: defineTable({
     videoId: v.string(),

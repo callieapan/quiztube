@@ -16,6 +16,7 @@ import type {
 } from "convex/server";
 import type * as clerk from "../clerk.js";
 import type * as http from "../http.js";
+import type * as quizzes from "../quizzes.js";
 import type * as users from "../users.js";
 import type * as util from "../util.js";
 import type * as videos from "../videos.js";
@@ -31,6 +32,7 @@ import type * as videos from "../videos.js";
 declare const fullApi: ApiFromModules<{
   clerk: typeof clerk;
   http: typeof http;
+  quizzes: typeof quizzes;
   users: typeof users;
   util: typeof util;
   videos: typeof videos;

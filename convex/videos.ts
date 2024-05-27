@@ -2,31 +2,26 @@ import { v } from 'convex/values';
 
 import { Id } from './_generated/dataModel';
 import { mutation, query } from './_generated/server';
-import { vid } from './util';
+import { getYouTubeId, vid } from './util';
 
 export const addVideo = mutation({
   args: {
-    videoUrl: v.string(),
+    youtubeUrl: v.string(),
     userId: v.string(),
   },
   handler: async (ctx, args) => {
-    function getYouTubeId(url: string): string | null {
-      const regex =
-        /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-      const match = url.match(regex);
-      return match ? match[1] : null;
-    }
-    const youtubeId = getYouTubeId(args.videoUrl);
-
+    const youtubeId = getYouTubeId(args.youtubeUrl);
     const thumbnailUrl = `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
 
     // Add Video Info to DB
-    await ctx.db.insert('videos', {
-      videoUrl: args.videoUrl,
+    const videoId = await ctx.db.insert('videos', {
+      videoUrl: args.youtubeUrl,
       thumbnailUrl: thumbnailUrl,
       userId: args.userId as Id<'users'>,
-      videoId: youtubeId as string,
+      youtubeId: youtubeId as string,
     });
+
+    return videoId;
   },
 });
 
@@ -109,28 +104,5 @@ export const deleteVideo = mutation({
     }
 
     return await ctx.db.delete(video._id);
-  },
-});
-
-export const addQuiz = mutation({
-  args: {
-    videoId: v.string(),
-    questions: v.array(
-      v.object({
-        question: v.string(),
-        options: v.array(v.string()),
-        answer: v.string(),
-      }),
-    ),
-    createdBy: v.string(),
-  },
-  handler: async (ctx, args) => {
-    console.log('hit addQuiz');
-    // Add Quiz Info to DB
-    await ctx.db.insert('quizzes', {
-      videoId: args.videoId,
-      questions: args.questions,
-      createdBy: args.createdBy,
-    });
   },
 });
